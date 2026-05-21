@@ -11,7 +11,7 @@
 ## Что умеет
 
 - Загружает PDF с ведомостью объемов работ через веб-интерфейс.
-- Распознает таблицы OCR-моделью через Ollama.
+- Распознает таблицы через Vision-модель в роли OCR, запущенную локально через Ollama.
 - Сохраняет промежуточные результаты каждого этапа в Excel.
 - Классифицирует позиции как работы или материалы.
 - Ищет top-K кандидатов ВиКР через BERTA-эмбеддер и Qdrant.
@@ -32,7 +32,7 @@
 
 ```mermaid
 flowchart LR
-    A["PDF ведомость"] --> B["OCR через Ollama"]
+    A["PDF ведомость"] --> B["Vision OCR через Ollama"]
     B --> C["Raw Excel"]
     C --> D["Структурирование и классификация"]
     D --> E["BERTA embeddings"]
@@ -90,7 +90,7 @@ python app.py
 
 - Python 3.10 или новее.
 - Poppler, доступный из `PATH`, или путь в `GRAPHIT_POPPLER_PATH`.
-- Ollama с OCR/LLM-моделями.
+- Ollama с Vision-моделью для OCR и LLM-моделью для структурирования.
 - Qdrant с коллекцией ВиКР.
 - Локальные ML-артефакты:
   - BERTA embedder;
@@ -143,7 +143,7 @@ docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant
 
 Коллекция по умолчанию: `vikr_v6`. Ее можно поменять через `GRAPHIT_QDRANT_COLLECTION`.
 
-### 3. Запустите Ollama
+### 3. Запустите Ollama и Vision OCR
 
 ```bash
 ollama serve
@@ -151,7 +151,25 @@ ollama pull qwen3.5:27b
 ollama pull gemma3:4b-it-fp16
 ```
 
-Названия моделей можно поменять в `.env`.
+В проекте `qwen3.5:27b` используется как Vision-модель для OCR: PDF
+разбивается на изображения страниц, после чего модель переписывает табличные
+данные в текстовую структуру. Страница модели в каталоге Ollama:
+[qwen3.5:27b](https://ollama.com/library/qwen3.5:27b).
+
+`gemma3:4b-it-fp16` используется для вспомогательного LLM-этапа
+структурирования. Названия моделей можно поменять в `.env`:
+
+```text
+GRAPHIT_OCR_MODEL=qwen3.5:27b
+GRAPHIT_MERGE_MODEL=gemma3:4b-it-fp16
+```
+
+Проверить, что модель скачалась и доступна:
+
+```bash
+ollama list
+ollama run qwen3.5:27b
+```
 
 ### 4. Запустите приложение
 
@@ -175,7 +193,7 @@ python app.py
 | `GRAPHIT_QDRANT_PORT` | порт Qdrant | `6333` |
 | `GRAPHIT_QDRANT_COLLECTION` | коллекция Qdrant | `vikr_v6` |
 | `GRAPHIT_OLLAMA_URL` | URL Ollama | `http://localhost:11434` |
-| `GRAPHIT_OCR_MODEL` | OCR-модель | `qwen3.5:27b` |
+| `GRAPHIT_OCR_MODEL` | Vision-модель для OCR через Ollama | `qwen3.5:27b` |
 | `GRAPHIT_MERGE_MODEL` | модель структурирования | `gemma3:4b-it-fp16` |
 | `GRAPHIT_POPPLER_PATH` | путь к Poppler | пусто, используется `PATH` |
 
