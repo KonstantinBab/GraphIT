@@ -3,9 +3,11 @@
 This release contains optional trained artifacts for running the full GraphIT
 pipeline locally.
 
-GraphIT v0.1.0 is a working MVP. The training data covered RD disciplines
-АС, КЖ, КМ, with ТХ represented in a small volume. Quality should be validated
-separately for other disciplines and document formats.
+GraphIT v0.1.0 is a working MVP. The training data covered RD disciplines:
+АС (Architectural and construction solutions), КЖ (reinforced concrete
+structures), КМ (metal structures), with ТХ (technological solutions)
+represented in a small volume. Quality should be validated separately for other
+disciplines and document formats.
 
 ## Assets
 
