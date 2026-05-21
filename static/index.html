@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ГрафИТ — ВР → ВиКР</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Commissioner:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header class="header">
+    <div class="header-content">
+        <div class="header-top">
+            <span class="brand-mark">ГрафИТ</span>
+            <span class="logo-text">Интеллектуальная обработка документов</span>
+        </div>
+        <h1>ГрафИТ · Конвейер обработки ВР → ВиКР</h1>
+        <p class="subtitle">Автоматический подбор видов и комплексов работ по ведомостям объёмов работ</p>
+    </div>
+</header>
+
+<!-- ═══ MAIN ═══ -->
+<main class="container">
+
+    <!-- Tabs -->
+    <nav class="tabs">
+        <button class="tab active" data-tab="full">Полный конвейер</button>
+        <button class="tab" data-tab="stages">По этапам</button>
+        <button class="tab" data-tab="results">Результаты</button>
+    </nav>
+
+    <!-- ═══ TAB: ПОЛНЫЙ КОНВЕЙЕР ═══ -->
+    <section id="tab-full" class="tab-content active">
+        <div class="card upload-card">
+            <h3>Загрузите PDF с ведомостью</h3>
+            <p class="hint">Система выполнит все 4 этапа автоматически: парсинг → структурирование → матчинг → агрегация</p>
+            <div class="upload-area" id="full-upload-area">
+                <input type="file" id="full-file" accept=".pdf" hidden>
+                <div class="upload-placeholder" id="full-upload-placeholder">
+                    <div class="upload-icon">📄</div>
+                    <span>Перетащите PDF или нажмите для выбора</span>
+                </div>
+                <div class="upload-selected" id="full-upload-selected" hidden>
+                    <span class="file-name" id="full-file-name"></span>
+                    <button class="btn-clear" id="full-clear-btn" title="Очистить">✕</button>
+                </div>
+            </div>
+            <button class="btn-primary" id="full-run-btn" disabled>Запустить конвейер</button>
+        </div>
+
+        <!-- Stepper -->
+        <div class="stepper" id="full-stepper" hidden>
+            <div class="step" data-step="1">
+                <div class="step-circle">1</div>
+                <div class="step-info">
+                    <div class="step-title">Парсинг PDF</div>
+                    <div class="step-desc">OCR извлечение таблиц</div>
+                    <div class="step-time"></div>
+                </div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step" data-step="2">
+                <div class="step-circle">2</div>
+                <div class="step-info">
+                    <div class="step-title">Структурирование</div>
+                    <div class="step-desc">Классификация работ/материалов</div>
+                    <div class="step-time"></div>
+                </div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step" data-step="3">
+                <div class="step-circle">3</div>
+                <div class="step-info">
+                    <div class="step-title">Матчинг</div>
+                    <div class="step-desc">BERTA + Qdrant + LLM Selector</div>
+                    <div class="step-time"></div>
+                </div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step" data-step="4">
+                <div class="step-circle">4</div>
+                <div class="step-info">
+                    <div class="step-title">Агрегация</div>
+                    <div class="step-desc">Группировка по кодам ВиКР</div>
+                    <div class="step-time"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="progress-section" id="full-progress" hidden>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar" id="full-progress-bar"></div>
+            </div>
+            <div class="progress-text" id="full-progress-text"></div>
+        </div>
+
+        <!-- Timer -->
+        <div class="timer" id="full-timer" hidden>
+            <span class="timer-icon">⏱</span>
+            <span class="timer-value" id="full-timer-value">00:00</span>
+        </div>
+
+        <!-- Result -->
+        <div class="result-card" id="full-result" hidden>
+            <div class="result-icon">✅</div>
+            <div class="result-info">
+                <div class="result-title">Конвейер завершён</div>
+                <div class="result-time" id="full-result-time"></div>
+            </div>
+            <a class="btn-download" id="full-download-link" href="#">Скачать результат</a>
+        </div>
+
+        <!-- Log -->
+        <div class="log-section">
+            <div class="log-header">Журнал</div>
+            <pre class="log-output" id="full-log"></pre>
+        </div>
+    </section>
+
+    <!-- ═══ TAB: ПО ЭТАПАМ ═══ -->
+    <section id="tab-stages" class="tab-content">
+
+        <!-- Этап 1: Парсинг -->
+        <div class="stage-card" data-stage-mode="parse">
+            <div class="stage-header" data-toggle="stage-1-body">
+                <div class="stage-number">1</div>
+                <div class="stage-title-group">
+                    <h3>Парсинг PDF</h3>
+                    <span class="stage-hint">Извлечение таблиц из PDF через LLM-OCR</span>
+                </div>
+                <span class="stage-toggle">▼</span>
+            </div>
+            <div class="stage-body" id="stage-1-body">
+                <div class="stage-upload-row">
+                    <div class="upload-area small" data-stage-upload="parse">
+                        <input type="file" accept=".pdf" hidden>
+                        <div class="upload-placeholder">
+                            <span>PDF файл</span>
+                        </div>
+                        <div class="upload-selected" hidden>
+                            <span class="file-name"></span>
+                            <button class="btn-clear" title="Очистить">✕</button>
+                        </div>
+                    </div>
+                    <button class="btn-primary" disabled>Парсинг</button>
+                </div>
+                <div class="stage-progress" hidden>
+                    <div class="progress-bar-wrapper"><div class="progress-bar"></div></div>
+                    <div class="progress-text"></div>
+                </div>
+                <div class="stage-status" hidden></div>
+                <div class="stage-result" hidden>
+                    <a class="btn-download" href="#">Скачать результат</a>
+                </div>
+                <pre class="log-output small" hidden></pre>
+            </div>
+        </div>
+
+        <!-- Этап 2: Структурирование -->
+        <div class="stage-card" data-stage-mode="struct">
+            <div class="stage-header" data-toggle="stage-2-body">
+                <div class="stage-number">2</div>
+                <div class="stage-title-group">
+                    <h3>Структурирование</h3>
+                    <span class="stage-hint">Классификация работ и материалов</span>
+                </div>
+                <span class="stage-toggle">▼</span>
+            </div>
+            <div class="stage-body" id="stage-2-body">
+                <div class="stage-upload-row">
+                    <div class="upload-area small" data-stage-upload="struct">
+                        <input type="file" accept=".xlsx" hidden>
+                        <div class="upload-placeholder">
+                            <span>Excel файл (raw)</span>
+                        </div>
+                        <div class="upload-selected" hidden>
+                            <span class="file-name"></span>
+                            <button class="btn-clear" title="Очистить">✕</button>
+                        </div>
+                    </div>
+                    <button class="btn-primary" disabled>Структурировать</button>
+                </div>
+                <div class="stage-progress" hidden>
+                    <div class="progress-bar-wrapper"><div class="progress-bar"></div></div>
+                    <div class="progress-text"></div>
+                </div>
+                <div class="stage-status" hidden></div>
+                <div class="stage-result" hidden>
+                    <a class="btn-download" href="#">Скачать результат</a>
+                </div>
+                <pre class="log-output small" hidden></pre>
+            </div>
+        </div>
+
+        <!-- Этап 3: Матчинг -->
+        <div class="stage-card" data-stage-mode="match">
+            <div class="stage-header" data-toggle="stage-3-body">
+                <div class="stage-number">3</div>
+                <div class="stage-title-group">
+                    <h3>Матчинг</h3>
+                    <span class="stage-hint">BERTA → Qdrant top-5 → LLM Selector</span>
+                </div>
+                <span class="stage-toggle">▼</span>
+            </div>
+            <div class="stage-body" id="stage-3-body">
+                <div class="stage-upload-row">
+                    <div class="upload-area small" data-stage-upload="match">
+                        <input type="file" accept=".xlsx" hidden>
+                        <div class="upload-placeholder">
+                            <span>Structured Excel</span>
+                        </div>
+                        <div class="upload-selected" hidden>
+                            <span class="file-name"></span>
+                            <button class="btn-clear" title="Очистить">✕</button>
+                        </div>
+                    </div>
+                    <button class="btn-primary" disabled>Матчинг</button>
+                </div>
+                <div class="stage-progress" hidden>
+                    <div class="progress-bar-wrapper"><div class="progress-bar"></div></div>
+                    <div class="progress-text"></div>
+                </div>
+                <div class="stage-status" hidden></div>
+                <div class="stage-result" hidden>
+                    <a class="btn-download" href="#">Скачать результат</a>
+                </div>
+                <pre class="log-output small" hidden></pre>
+            </div>
+        </div>
+
+        <!-- Этап 4: Агрегация -->
+        <div class="stage-card" data-stage-mode="aggregate">
+            <div class="stage-header" data-toggle="stage-4-body">
+                <div class="stage-number">4</div>
+                <div class="stage-title-group">
+                    <h3>Агрегация</h3>
+                    <span class="stage-hint">Группировка работ по кодам ВиКР</span>
+                </div>
+                <span class="stage-toggle">▼</span>
+            </div>
+            <div class="stage-body" id="stage-4-body">
+                <div class="stage-upload-row">
+                    <div class="upload-area small" data-stage-upload="aggregate">
+                        <input type="file" accept=".xlsx" hidden>
+                        <div class="upload-placeholder">
+                            <span>Matched Excel</span>
+                        </div>
+                        <div class="upload-selected" hidden>
+                            <span class="file-name"></span>
+                            <button class="btn-clear" title="Очистить">✕</button>
+                        </div>
+                    </div>
+                    <button class="btn-primary" disabled>Агрегация</button>
+                </div>
+                <div class="stage-progress" hidden>
+                    <div class="progress-bar-wrapper"><div class="progress-bar"></div></div>
+                    <div class="progress-text"></div>
+                </div>
+                <div class="stage-status" hidden></div>
+                <div class="stage-result" hidden>
+                    <a class="btn-download" href="#">Скачать результат</a>
+                </div>
+                <pre class="log-output small" hidden></pre>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- ═══ TAB: РЕЗУЛЬТАТЫ ═══ -->
+    <section id="tab-results" class="tab-content">
+        <div class="results-grid">
+
+            <div class="results-folder" data-folder="parse">
+                <div class="folder-header">
+                    <div class="folder-icon">📄</div>
+                    <div>
+                        <h3>Парсинг</h3>
+                        <span class="folder-path">parse_files/</span>
+                    </div>
+                    <button class="btn-refresh" title="Обновить">↻</button>
+                </div>
+                <div class="folder-files">
+                    <div class="folder-empty">Нет файлов</div>
+                </div>
+            </div>
+
+            <div class="results-folder" data-folder="struct">
+                <div class="folder-header">
+                    <div class="folder-icon">🔧</div>
+                    <div>
+                        <h3>Структурирование</h3>
+                        <span class="folder-path">struct_files/</span>
+                    </div>
+                    <button class="btn-refresh" title="Обновить">↻</button>
+                </div>
+                <div class="folder-files">
+                    <div class="folder-empty">Нет файлов</div>
+                </div>
+            </div>
+
+            <div class="results-folder" data-folder="match">
+                <div class="folder-header">
+                    <div class="folder-icon">🔍</div>
+                    <div>
+                        <h3>Сопоставление</h3>
+                        <span class="folder-path">matched_files/</span>
+                    </div>
+                    <button class="btn-refresh" title="Обновить">↻</button>
+                </div>
+                <div class="folder-files">
+                    <div class="folder-empty">Нет файлов</div>
+                </div>
+            </div>
+
+            <div class="results-folder" data-folder="aggregate">
+                <div class="folder-header">
+                    <div class="folder-icon">📊</div>
+                    <div>
+                        <h3>Агрегация</h3>
+                        <span class="folder-path">final_files/</span>
+                    </div>
+                    <button class="btn-refresh" title="Обновить">↻</button>
+                </div>
+                <div class="folder-files">
+                    <div class="folder-empty">Нет файлов</div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</main>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+    <strong>ГрафИТ</strong> · Конвейер ВР → ВиКР
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36" version="29.6.6">
+  <diagram id="architecture" name="Construction Pipeline Architecture RU">
+    <mxGraphModel dx="8083" dy="4190" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1200" pageHeight="1600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontSize=20;fontStyle=bold;fillColor=#1e40af;strokeColor=none;fontColor=#ffffff;" value="&lt;font face=&quot;Times New Roman&quot;&gt;КОНВЕЙЕР ОБРАБОТКИ ВОР- АРХИТЕКТУРА СИСТЕМЫ&lt;/font&gt;" vertex="1">
+          <mxGeometry height="40" width="1200" x="-20" y="-90" as="geometry" />
+        </mxCell>
+        <mxCell id="input_title" parent="1" style="text;html=1;align=left;fontSize=14;fontStyle=bold;fontColor=#1e40af;" value="&amp;nbsp; &amp;nbsp; &amp;nbsp;ВХОДНЫЕ ДАННЫЕ" vertex="1">
+          <mxGeometry height="20" width="200" y="-40" as="geometry" />
+        </mxCell>
+        <mxCell id="input_pdf" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#1e40af;strokeWidth=2;fontSize=11;fontStyle=bold;" value="&lt;font face=&quot;Times New Roman&quot;&gt;📄 PDF файл&lt;br&gt;(ВОР)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="70" width="120" x="40" y="-10" as="geometry" />
+        </mxCell>
+        <mxCell id="stage1_title" parent="1" style="text;html=1;align=left;fontSize=12;fontStyle=bold;fontColor:#059669;backgroundColor=#dcfce7;" value="ЭТАП 1: ПАРСИНГ PDF (OCR)" vertex="1">
+          <mxGeometry height="20" width="1160" x="120" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="stage1_flow" edge="1" parent="1" source="input_pdf" style="endArrow=classic;html=1;strokeColor:#059669;strokeWidth=2;rounded=1;" target="ocr_process" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ocr_process" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor:#059669;strokeWidth=2;fontSize=11;" value="&lt;font face=&quot;Times New Roman&quot;&gt;1️⃣ Преобразование PDF&lt;br&gt;в изображения&lt;br&gt;DPI=400&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="140" x="30" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="to_preprocess" edge="1" parent="1" source="ocr_process" style="endArrow=classic;html=1;strokeColor:#059669;strokeWidth=2;rounded=1;" target="preprocess_img" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="preprocess_img" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor:#059669;strokeWidth=2;fontSize=11;" value="&lt;font face=&quot;Times New Roman&quot;&gt;2️⃣ Предобработка&lt;br&gt;изображений&lt;br&gt;• RGBA→RGB&lt;br&gt;• CLAHE контраст&lt;br&gt;• OpenCV фильтры&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="160" x="200" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="to_ollama" edge="1" parent="1" source="preprocess_img" style="endArrow=classic;html=1;strokeColor:#059669;strokeWidth=2;rounded=1;" target="ollama_ocr" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ollama_service" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fef08a;strokeColor=#b8860b;strokeWidth=2;fontSize=10;fontStyle=bold;dashed=1;" value="&lt;font face=&quot;Times New Roman&quot;&gt;OLLAMA СЕРВИС&lt;br&gt;(Vision Model)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="60" width="160" x="370" y="-20" as="geometry" />
+        </mxCell>
+        <mxCell id="ollama_ocr" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor:#059669;strokeWidth=2;fontSize=11;" value="&lt;font face=&quot;Times New Roman&quot;&gt;3️⃣ Ollama REST API&lt;br&gt;POST /api/chat&lt;br&gt;Модель OCR&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="160" x="370" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="to_ollama_line" edge="1" parent="1" source="ollama_service" style="endArrow=classic;html=1;strokeColor:#b8860b;strokeWidth=2;dashed=1;" target="ollama_ocr" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="to_parse_ocr" edge="1" parent="1" source="ollama_ocr" style="endArrow=classic;html=1;strokeColor:#059669;strokeWidth=2;rounded=1;" target="parse_markdown" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="parse_markdown" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor:#dcfce7;strokeColor:#059669;strokeWidth=2;fontSize=11;" value="&lt;font face=&quot;Times New Roman&quot;&gt;4️⃣ Парсинг Markdown&lt;br&gt;таблицы&lt;br&gt;Извлечение: №, Наименование&lt;br&gt;Ед. изм., Кол-во&lt;br&gt;Детектирование разделов&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="160" x="540" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="to_structure" edge="1" parent="1" source="parse_markdown" style="endArrow=classic;html=1;strokeColor:#059669;strokeWidth=2;rounded=1;" target="detect_hierarchy" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="detect_hierarchy" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor:#dcfce7;strokeColor:#059669;strokeWidth=2;fontSize=11;" value="&lt;font face=&quot;Times New Roman&quot;&gt;5️⃣ Построение&lt;br&gt;иерархии&lt;br&gt;• Пропагация заголовков&lt;br&gt;• level, parent_id&lt;br&gt;• path (иерархия)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="160" x="710" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="to_stage1_output" edge="1" parent="1" source="detect_hierarchy" style="endArrow=classic;html=1;strokeColor:#059669;strokeWidth=2;rounded=1;" target="stage1_output" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="stage1_output" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d1fae5;strokeColor:#059669;strokeWidth=3;fontSize=11;fontStyle=bold;" value="&lt;font face=&quot;Times New Roman&quot;&gt;&amp;nbsp;Выход: parsed.xlsx&lt;br&gt;Колонки: №п/п, Раздел,&lt;br&gt;Подраздел, Наименование,&lt;br&gt;Ед. изм., Кол-во, страница&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="160" x="880" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="stage2_title" parent="1" style="text;html=1;align=left;fontSize=12;fontStyle=bold;fontColor:#7c3aed;backgroundColor=#ede9fe;" value="&lt;font face=&quot;Times New Roman&quot;&gt;ЭТАП 2: СТРУКТУРИРОВАНИЕ (GESNClassifier)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="20" width="1160" x="120" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="from_stage1_to_stage2" edge="1" parent="1" source="stage1_output" style="endArrow=classic;html=1;strokeColor:#7c3aed;strokeWidth=2;rounded=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="960" y="210" />
+              <mxPoint x="100" y="210" />
+            </Array>
+            <mxPoint x="100" y="339" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="stage2_input" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ede9fe;strokeColor:#7c3aed;strokeWidth=2;fontSize=11;" value="&lt;font face=&quot;Times New Roman&quot;&gt;Вход: parsed.xlsx&lt;/font&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="50" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="to_preprocess_df" edge="1" parent="1" style="endArrow=classic;html=1;strokeColor:#7c3aed;strokeWidth=2;rounded=1;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="170" y="369.71" as="sourcePoint" />
+            <mxPoint x="200" y="369.71" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="preprocess_df" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ede9fe;strokeColor:#7c3aed;strokeWidth=2;fontSize=11;" value="&lt;font face=&quot;Times New Roman&quot;&gt;1️⃣ Предобработка&lt;br&gt;DataFrame&lt;br&gt;Заполнение NaN&lt;br&gt;Создание колонки Тип&lt;/font&gt;" vertex="1">
+          <mxGeometry height="60" width="140" x="200" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="to_qwen_model" edge="1" parent="1" source="preprocess_df" style="endArrow=classic;html=1;strokeColor:#7c3aed;strokeWidth=2;rounded=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="qwen_classifier" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="340" y="352.729393939394" as="sourcePoint" />
+            <mxPoint x="520" y="350.00212121212127" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FIY4EJYF7iHAu-ic4XY2-4" edge="1" parent="1" source="qwen_base" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="qwen_classifier" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="qwen_base" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor:#d97706;strokeWidth=2;fontSize=10;fontStyle=bold;dashed=1;" value="&lt;font face=&quot;Times New Roman&quot;&gt;QWEN2.5-3B&lt;br&gt;(Базовая модель)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="30" width="120" x="540" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="FIY4EJYF7iHAu-ic4XY2-3" edge="1" parent="1" source="qwen_lora" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="qwen_classifier" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="qwen_lora" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor:#fef3c7;strokeColor:#d97706;strokeWidth=2;fontSize=10;fontStyle=bold;dashed=1;" value="&lt;font face=&quot;Times New Roman&quot;&gt;LoRA Адаптер&lt;br&gt;(final/)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="35" width="90" x="555" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="qwen_classifier" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor:#ede9fe;strokeColor:#7c3aed;strokeWidth=2;fontSize=11;" value="&lt;font face=&quot;Times New Roman&quot;&gt;2️⃣ LLM Классификация&lt;br&gt;• Пакетная обработка&lt;br&gt;• ThreadPoolExecutor&lt;br&gt;• Формат: Наименование,&lt;br&gt;  Ед. изм., Раздел&lt;/font&gt;" vertex="1">
+          <mxGeometry height="85" width="160" x="520" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="to_classify" edge="1" parent="1" source="qwen_classifier" style="endArrow=classic;html=1;strokeColor:#7c3aed;strokeWidth=2;rounded=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="680" y="368.42578947368395" as="sourcePoint" />
+            <mxPoint x="720" y="371.58368421052626" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="classify_result" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ede9fe;strokeColor:#7c3aed;strokeWidth=2;fontSize=11;" value="&lt;font face=&quot;Times New Roman&quot;&gt;3️⃣ Результат: Тип&lt;br&gt;• &#39;work&#39; (Работа)&lt;br&gt;• &#39;material&#39;&lt;br&gt;  (Материал)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="140" x="720" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="to_stage2_output" edge="1" parent="1" style="endArrow=classic;html=1;strokeColor:#7c3aed;strokeWidth=2;rounded=1;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="860" y="379.71" as="sourcePoint" />
+            <mxPoint x="900" y="379.71" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="stage2_output" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ddd6fe;strokeColor:#7c3aed;strokeWidth=3;fontSize=11;fontStyle=bold;" value="Выход: structured.xlsx&lt;br&gt;Колонки: +Тип, +Раздел,&lt;br&gt;+Подраздел, переупорядочено" vertex="1">
+          <mxGeometry height="80" width="160" x="900" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="stage3_title" parent="1" style="text;html=1;align=left;fontSize=12;fontStyle=bold;fontColor:#dc2626;backgroundColor=#fee2e2;" value="&lt;font face=&quot;Times New Roman&quot;&gt;ЭТАП 3: МАТЧИНГ (Matcher&amp;nbsp; + BERTA + LLM)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="20" width="1160" x="120" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="from_stage2_to_stage3" edge="1" parent="1" source="stage2_output" style="endArrow=classic;html=1;strokeColor:#dc2626;strokeWidth=2;rounded=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="stage3_input" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="980" y="435" />
+              <mxPoint x="120" y="435" />
+            </Array>
+            <mxPoint x="980" y="425" as="sourcePoint" />
+            <mxPoint x="120" y="600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="stage3_input" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor:#fee2e2;strokeColor:#dc2626;strokeWidth=2;fontSize=11;" value="&lt;font face=&quot;Times New Roman&quot;&gt;Вход: structured.xlsx&lt;/font&gt;" vertex="1">
+          <mxGeometry height="70" width="120" x="60" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="to_embedder" edge="1" parent="1" source="stage3_input" style="endArrow=classic;html=1;strokeColor:#dc2626;strokeWidth=2;rounded=1;" target="berta_encode" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="berta_model" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fecaca;strokeColor:#dc2626;strokeWidth=2;fontSize=10;fontStyle=bold;dashed=1;" value="&lt;font face=&quot;Times New Roman&quot;&gt;BERTA Embedder&lt;br&gt;(Sentence Transformer)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="50" width="140" x="210" y="455" as="geometry" />
+        </mxCell>
+        <mxCell id="berta_encode" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fee2e2;strokeColor:#dc2626;strokeWidth=2;fontSize=11;" value="&lt;font face=&quot;Times New Roman&quot;&gt;1️⃣ Кодирование&lt;br&gt;запросов&lt;br&gt;• Пакетное кодирование (16)&lt;br&gt;• SentenceTransformer&lt;/font&gt;" vertex="1">
+          <mxGeometry height="70" width="140" x="210" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="berta_to_encode" edge="1" parent="1" source="berta_model" style="endArrow=classic;html=1;strokeColor:#dc2626;strokeWidth=2;dashed=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="berta_encode" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="280" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="to_qdrant" edge="1" parent="1" source="berta_encode" style="endArrow=classic;html=1;strokeColor:#dc2626;strokeWidth=2;rounded=1;" target="qdrant_search" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="qdrant_db" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor:#e0e7ff;strokeColor:#4f46e5;strokeWidth=2;fontSize=10;fontStyle=bold;dashed=1;" value="&lt;font face=&quot;Times New Roman&quot;&gt;QDRANT VectorDB&lt;br&gt;Коллекция: &#39;vikr&#39;&lt;/font&gt;" vertex="1">
+          <mxGeometry height="60" width="140" x="360" y="455" as="geometry" />
+        </mxCell>
+        <mxCell id="qdrant_search" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor:#fee2e2;strokeColor:#dc2626;strokeWidth=2;fontSize=11;" value="&lt;font face=&quot;Times New Roman&quot;&gt;2️⃣ Векторный поиск&lt;br&gt;• search_points()&lt;br&gt;• top_k=5 кандидатов&lt;br&gt;• score (схожесть)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="140" x="360" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="qdrant_to_search" edge="1" parent="1" source="qdrant_db" style="endArrow=classic;html=1;strokeColor:#4f46e5;strokeWidth=2;dashed=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="qdrant_search" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="430" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="to_selector" edge="1" parent="1" source="qdrant_search" style="endArrow=classic;html=1;strokeColor:#dc2626;strokeWidth=2;rounded=1;" target="llm_selector" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="selector_base" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor:#fef3c7;strokeColor:#d97706;strokeWidth=2;fontSize=10;fontStyle=bold;dashed=1;" value="&lt;font face=&quot;Times New Roman&quot;&gt;QWEN2.5-7B&lt;br&gt;(Базовая модель)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="50" width="140" x="540" y="455" as="geometry" />
+        </mxCell>
+        <mxCell id="selector_lora" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor:#fef3c7;strokeColor:#d97706;strokeWidth=2;fontSize=10;fontStyle=bold;dashed=1;" value="&lt;font face=&quot;Times New Roman&quot;&gt;LoRA Адаптер&lt;/font&gt;" vertex="1">
+          <mxGeometry height="40" width="140" x="540" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="llm_selector" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fee2e2;strokeColor:#dc2626;strokeWidth=2;fontSize=11;" value="&lt;font face=&quot;Times New Roman&quot;&gt;3️⃣ LLM Селектор&lt;br&gt;Выбор лучшего кандидата&lt;br&gt;• bf16 + LoRA&lt;br&gt;• Возвращает 1-5 или 0&lt;br&gt;• Пакетная обработка&lt;/font&gt;" vertex="1">
+          <mxGeometry height="90" width="160" x="530" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="selector_to_llm" edge="1" parent="1" source="selector_base" style="endArrow=classic;html=1;strokeColor:#d97706;strokeWidth=2;dashed=1;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="610" y="530" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="selector_to_llm2" edge="1" parent="1" source="selector_lora" style="endArrow=classic;html=1;strokeColor:#d97706;strokeWidth=2;dashed=1;" target="llm_selector" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="601" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="to_code_lookup" edge="1" parent="1" source="llm_selector" style="endArrow=classic;html=1;strokeColor:#dc2626;strokeWidth=2;rounded=1;" target="code_lookup" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="reference_db" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor:#f3e8ff;strokeColor:#a855f7;strokeWidth=2;fontSize=10;fontStyle=bold;dashed=1;" value="&lt;font face=&quot;Times New Roman&quot;&gt;Справочник&lt;br&gt;код → наименование&lt;br&gt;(ВИКР справочник)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="60" width="140" x="730" y="455" as="geometry" />
+        </mxCell>
+        <mxCell id="code_lookup" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor:#fee2e2;strokeColor:#dc2626;strokeWidth=2;fontSize=11;" value="&lt;font face=&quot;Times New Roman&quot;&gt;4️⃣ Поиск кода&lt;br&gt;Получение кода работы&lt;br&gt;по выбору селектора&lt;/font&gt;" vertex="1">
+          <mxGeometry height="60" width="140" x="730" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="ref_to_lookup" edge="1" parent="1" source="reference_db" style="endArrow=classic;html=1;strokeColor:#a855f7;strokeWidth=2;dashed=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="code_lookup" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="800" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="to_stage3_output" edge="1" parent="1" source="code_lookup" style="endArrow=classic;html=1;strokeColor:#dc2626;strokeWidth=2;rounded=1;" target="stage3_output" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="stage3_output" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fee2e2;strokeColor:#dc2626;strokeWidth=3;fontSize=11;fontStyle=bold;" value="&lt;font face=&quot;Times New Roman&quot;&gt;Выход: файлы matched.xlsx&lt;br&gt;Колонки: +&amp;nbsp; Смэтченная работа&lt;br&gt;+Код работы, +Уверенность,&lt;br&gt;+Score, +Позиция в топ-5&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="160" x="910" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="stage4_title" parent="1" style="text;html=1;align=left;fontSize=12;fontStyle=bold;fontColor:#0891b2;backgroundColor=#cffafe;" value="&lt;font face=&quot;Times New Roman&quot;&gt;ЭТАП 4: АГРЕГАЦИЯ (FinalAggregator)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="20" width="1160" x="120" y="705" as="geometry" />
+        </mxCell>
+        <mxCell id="from_stage3_to_stage4" edge="1" parent="1" source="stage3_output" style="endArrow=classic;html=1;strokeColor:#0891b2;strokeWidth=2;rounded=1;" target="stage4_input" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="980" y="690" />
+              <mxPoint x="120" y="690" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="stage4_input" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor:#cffafe;strokeColor:#0891b2;strokeWidth=2;fontSize=11;" value="&lt;font face=&quot;Times New Roman&quot;&gt;Вход: matched.xlsx&lt;/font&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="60" y="745" as="geometry" />
+        </mxCell>
+        <mxCell id="to_agg_clean" edge="1" parent="1" source="stage4_input" style="endArrow=classic;html=1;strokeColor:#0891b2;strokeWidth=2;rounded=1;" target="agg_clean" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="agg_clean" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor:#cffafe;strokeColor:#0891b2;strokeWidth=2;fontSize=11;" value="&lt;font face=&quot;Times New Roman&quot;&gt;1️⃣ Очистка данных&lt;br&gt;• to_numeric()&lt;br&gt;• str.strip()&lt;br&gt;• dropna(Код работы)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="140" x="210" y="735" as="geometry" />
+        </mxCell>
+        <mxCell id="to_agg_group" edge="1" parent="1" source="agg_clean" style="endArrow=classic;html=1;strokeColor:#0891b2;strokeWidth=2;rounded=1;" target="agg_group" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="agg_group" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor:#cffafe;strokeColor:#0891b2;strokeWidth=2;fontSize=11;" value="&lt;font face=&quot;Times New Roman&quot;&gt;2️⃣ Группировка&lt;br&gt;• group_key = Раздел|Код&lt;br&gt;• Извлечение имени ВИКР&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="140" x="360" y="735" as="geometry" />
+        </mxCell>
+        <mxCell id="to_agg_aggregate" edge="1" parent="1" source="agg_group" style="endArrow=classic;html=1;strokeColor:#0891b2;strokeWidth=2;rounded=1;" target="agg_aggregate" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="agg_aggregate" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor:#cffafe;strokeColor:#0891b2;strokeWidth=2;fontSize=11;" value="&lt;font face=&quot;Times New Roman&quot;&gt;3️⃣ Агрегация&lt;br&gt;• Кол-во: сумма&lt;br&gt;• Средние: среднее&lt;br&gt;• Детали: первый/join&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="160" x="530" y="735" as="geometry" />
+        </mxCell>
+        <mxCell id="to_agg_format" edge="1" parent="1" source="agg_aggregate" style="endArrow=classic;html=1;strokeColor:#0891b2;strokeWidth=2;rounded=1;" target="agg_format" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="agg_format" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor:#cffafe;strokeColor:#0891b2;strokeWidth=2;fontSize=11;" value="&lt;font face=&quot;Times New Roman&quot;&gt;4️⃣ Форматирование&lt;br&gt;• Переименование колонок&lt;br&gt;• Переупорядочение&lt;br&gt;• Добавление метаданных&lt;/font&gt;" vertex="1">
+          <mxGeometry height="80" width="140" x="730" y="735" as="geometry" />
+        </mxCell>
+        <mxCell id="to_stage4_output" edge="1" parent="1" source="agg_format" style="endArrow=classic;html=1;strokeColor:#0891b2;strokeWidth=2;rounded=1;" target="stage4_output" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="stage4_output" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor:#a7f3d0;strokeColor:#0891b2;strokeWidth=3;fontSize=11;fontStyle=bold;" value="&lt;font face=&quot;Times New Roman&quot;&gt;Выход: final.xlsx&lt;br&gt;Уникальные по Код работы&lt;br&gt;Колонки: №п/п, Наименование&lt;br&gt;ВиКР, Кол-во, Ед. изм.,&lt;br&gt;Раздел, Код, Позиция,&lt;br&gt;+ Кол-во объединённых&lt;/font&gt;" vertex="1">
+          <mxGeometry height="130" width="160" x="910" y="715" as="geometry" />
+        </mxCell>
+        <mxCell id="ui_title" parent="1" style="text;html=1;align=left;fontSize=12;fontStyle=bold;fontColor:#6366f1;backgroundColor=#e0e7ff;" value="СЛОЙ ВЕБА (app.py)" vertex="1">
+          <mxGeometry height="20" width="1160" x="170" y="815" as="geometry" />
+        </mxCell>
+        <mxCell id="gradio_ui" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e0e7ff;strokeColor:#6366f1;strokeWidth=2;fontSize=11;fontStyle=bold;" value="Интерфейс FastAPI&lt;br&gt;• Режим полного конвейера&lt;br&gt;• Поэтапный режим&lt;br&gt;• Полосы прогресса (gr.Progress)&lt;br&gt;• Логирование (последние 80 строк)&lt;br&gt;• Время выполнения по этапам&lt;br&gt;• Скачивание файлов&lt;br&gt;• доступ к файлам на каждом этапе выполнения" vertex="1">
+          <mxGeometry height="120" width="1100" x="60" y="855" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_title" parent="1" style="text;html=1;align=left;fontSize=12;fontStyle=bold;fontColor=#374151;" value="ЛЕГЕНДА" vertex="1">
+          <mxGeometry height="20" width="200" x="30" y="995" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_solid" parent="1" style="text;html=1;align=left;fontSize=10;fontColor:#374151;" value="━━ Основной поток данных" vertex="1">
+          <mxGeometry height="20" width="200" x="30" y="1025" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_dashed" parent="1" style="text;html=1;align=left;fontSize=10;fontColor:#374151;strokeWidth=0;" value="╌╌ Внешний сервис / модель" vertex="1">
+          <mxGeometry height="20" width="200" x="30" y="1055" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_process" parent="1" style="text;html=1;align=left;fontSize=10;fontColor:#374151;" value="🔷 Блок обработки" vertex="1">
+          <mxGeometry height="20" width="200" x="310" y="1025" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_output" parent="1" style="text;html=1;align=left;fontSize=10;fontColor:#374151;" value="🟩 Финальный результат" vertex="1">
+          <mxGeometry height="20" width="200" x="310" y="1055" as="geometry" />
+        </mxCell>
+        <mxCell id="features_title" parent="1" style="text;html=1;align=left;fontSize=12;fontStyle=bold;fontColor:#374151;backgroundColor:#f3f4f6;" value="⚙️ КЛЮЧЕВЫЕ ОСОБЕННОСТИ" vertex="1">
+          <mxGeometry height="20" width="520" x="610" y="995" as="geometry" />
+        </mxCell>
+        <mxCell id="features_text" parent="1" style="text;html=1;align=left;fontSize=10;fontColor:#374151;whiteSpace=wrap;" value="✅ Параллельная обработка (ThreadPoolExecutor) ✅ Пакетная обработка (16-32 образца) ✅ 4-битное квантование (оптимизация VRAM) ✅ bf16 точность (быстрый LLM инференс) ✅ Очистка VRAM после каждого этапа ✅ Progress callbacks для интерфейса ✅ Корректная обработка ошибок &amp; логирование ✅ Конфиг-ориентированная архитектура" vertex="1">
+          <mxGeometry height="80" width="520" x="610" y="1025" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
